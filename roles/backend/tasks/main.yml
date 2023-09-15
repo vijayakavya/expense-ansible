@@ -1,6 +1,7 @@
 - name: Verify NodeJS
   ansible.builtin.shell: type npm
   register: npm
+  ignore_errors: yes
 
 
 
@@ -22,21 +23,10 @@
   ansible.builtin.user:
     name: expense
 
-- name: Cleanup Old Content
-  ansible.builtin.file:
-    path: /app
-    state: absent
-
-- name: create app directory
-  ansible.builtin.file:
-    path: /app
-    state: directory
-
-- name: Download backend code and extract it
-  ansible.builtin.unarchive:
-    src: https://expense-artifacts.s3.amazonaws.com/backend.zip
-    dest: /app
-    remote_src: yes
+- name: Include App Pre-requisites
+  ansible.builtin.import_role:
+    name: common
+    tasks_from: app_prereq
 
 - name: install NodeJS Dependencies
   ansible.builtin.shell: npm install
